@@ -2,17 +2,17 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { authClient } from "@/lib/auth-client"; // Import your Better Auth client instance
-import { 
-  Building2, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  CheckCircle2, 
-  AlertCircle 
+import {
+  Building2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
+import { authClient } from "@/app/lib/auth-client";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -37,22 +37,26 @@ const LoginPage = () => {
       const { data, error } = await authClient.signIn.email({
         email,
         password,
-        rememberMe,
+        dontRememberMe: !rememberMe, // Better Auth uses dontRememberMe boolean flag
       });
 
       if (error) {
-        setErrorMessage(error.message || "Invalid email or password. Please try again.");
+        setErrorMessage(
+          error.message || "Invalid email or password. Please try again.",
+        );
       } else if (data) {
         // Redirect based on selected role
         if (role === "staff") {
-          router.push("/admin/dashboard");
+          router.push("/admin");
         } else {
-          router.push("/portal");
+          router.push("/");
         }
         router.refresh();
       }
     } catch (err: any) {
-      setErrorMessage("An unexpected server error occurred. Please try again later.");
+      setErrorMessage(
+        "An unexpected server error occurred. Please try again later.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -67,11 +71,10 @@ const LoginPage = () => {
       </div>
 
       <div className="w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 grid grid-cols-1 lg:grid-cols-12 relative z-10">
-        
         {/* Left Side: Branding & Marketing Section */}
         <div className="lg:col-span-5 bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-800 p-8 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px]" />
-          
+
           <div className="relative z-10">
             {/* Company Logo */}
             <div className="flex items-center gap-3 mb-8">
@@ -80,7 +83,9 @@ const LoginPage = () => {
               </div>
               <div>
                 <h2 className="font-bold text-xl tracking-wide">DistroHub</h2>
-                <p className="text-xs text-blue-100">Distribution Management Platform</p>
+                <p className="text-xs text-blue-100">
+                  Distribution Management Platform
+                </p>
               </div>
             </div>
 
@@ -89,7 +94,8 @@ const LoginPage = () => {
                 Sign in to your distribution account
               </h1>
               <p className="text-blue-100 text-sm leading-relaxed">
-                Effortlessly track stock levels, place new orders, and manage invoices all in one place.
+                Effortlessly track stock levels, place new orders, and manage
+                invoices all in one place.
               </p>
             </div>
           </div>
@@ -113,13 +119,14 @@ const LoginPage = () => {
           {/* Footer Info */}
           <div className="relative z-10 pt-6 border-t border-white/20 text-xs text-blue-200">
             Need assistance? Contact us at:{" "}
-            <span className="text-white font-medium">support@distrohub.com</span>
+            <span className="text-white font-medium">
+              support@distrohub.com
+            </span>
           </div>
         </div>
 
         {/* Right Side: Login Form */}
         <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
-          
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               Welcome back 👋
@@ -165,7 +172,6 @@ const LoginPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
             {/* Email Field */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
@@ -212,7 +218,11 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -252,13 +262,14 @@ const LoginPage = () => {
           {/* Registration Hint */}
           <div className="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
             New retailer?{" "}
-            <a href="/register" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+            <a
+              href="/auth/register"
+              className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+            >
               Apply for an account here
             </a>
           </div>
-
         </div>
-
       </div>
     </div>
   );

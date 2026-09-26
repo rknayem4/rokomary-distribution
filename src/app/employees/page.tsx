@@ -4,7 +4,7 @@ import React from 'react';
 const EmployeesPage = () => {
   return (
     <div>
-      <App></App>
+      employee page
     </div>
   );
 };
