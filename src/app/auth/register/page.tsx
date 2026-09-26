@@ -55,7 +55,6 @@ const RegisterPage = () => {
         email,
         password,
         name,
-        // Passing custom user profile details
         role,
         phone,
         retailer,
@@ -99,16 +98,14 @@ const RegisterPage = () => {
 
           <div className="relative z-10">
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-xl border border-white/30">
-                <Building2 className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h2 className="font-bold text-xl tracking-wide">DistroHub</h2>
-                <p className="text-xs text-indigo-100">
-                  Distribution Management Platform
-                </p>
-              </div>
+            <div className="flex justify-center">
+              <Link href="/">
+                <img
+                  src="/assats/rokomary-distribution.svg"
+                  alt="Rokomary Distribution"
+                  className="max-w-50 p-2"
+                />
+              </Link>
             </div>
 
             <div className="mt-8 space-y-4">
@@ -165,25 +162,14 @@ const RegisterPage = () => {
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6">
             <button
               type="button"
-              onClick={() => setRole("CLIENT")}
+              onClick={() => setRole("RETAILER")}
               className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all ${
-                role === "CLIENT"
+                role === "RETAILER"
                   ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
               }`}
             >
-              Retailer / Client
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("EMPLOYEE")}
-              className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all ${
-                role === "EMPLOYEE"
-                  ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
-              }`}
-            >
-              Staff / Employee
+              Retailer
             </button>
           </div>
 
@@ -218,7 +204,7 @@ const RegisterPage = () => {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Company / Store Name
+                  Retailer Name
                 </label>
                 <div className="relative">
                   <Store className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />

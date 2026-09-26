@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { authClient } from "@/app/lib/auth-client";
+import Link from "next/link";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -63,7 +64,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-full mb-10 pb-10 bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       {/* Background Decorator Gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -77,16 +78,14 @@ const LoginPage = () => {
 
           <div className="relative z-10">
             {/* Company Logo */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-xl border border-white/30">
-                <Building2 className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h2 className="font-bold text-xl tracking-wide">DistroHub</h2>
-                <p className="text-xs text-blue-100">
-                  Distribution Management Platform
-                </p>
-              </div>
+            <div className="flex justify-center">
+              <Link href="/">
+                <img
+                  src="/assats/rokomary-distribution.svg"
+                  alt="Rokomary Distribution"
+                  className="max-w-50 p-2"
+                />
+              </Link>
             </div>
 
             <div className="mt-8 space-y-4">
@@ -148,17 +147,6 @@ const LoginPage = () => {
               }`}
             >
               Retailer / Client
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole("staff")}
-              className={`flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all ${
-                role === "staff"
-                  ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
-              }`}
-            >
-              Staff / Admin
             </button>
           </div>
 

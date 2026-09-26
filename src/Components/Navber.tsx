@@ -70,10 +70,7 @@ const Navbar = () => {
   // Authentication
   // ----------------------------------------------------------
 
-  const {
-    data: session,
-    isPending,
-  } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   const currentUser = session?.user;
 
@@ -83,8 +80,7 @@ const Navbar = () => {
 
   const userRole = currentUser?.role as UserRole | undefined;
 
-  const isAdminOrEmployee =
-    userRole === "admin" || userRole === "EMPLOYEE";
+  const isAdminOrEmployee = userRole === "admin" || userRole === "EMPLOYEE";
 
   // ----------------------------------------------------------
   // Logout
@@ -231,9 +227,7 @@ const Navbar = () => {
                     {/* Account Information */}
 
                     <div className="px-4 py-2.5 border-b border-slate-800">
-                      <p className="text-xs text-slate-400">
-                        Signed in as
-                      </p>
+                      <p className="text-xs text-slate-400">Signed in as</p>
 
                       <p className="text-sm font-semibold text-slate-200 truncate">
                         {currentUser?.email}
@@ -354,9 +348,7 @@ const Navbar = () => {
                     }`}
                   />
 
-                  <span className="text-[11px] mt-1">
-                    {link.label}
-                  </span>
+                  <span className="text-[11px] mt-1">{link.label}</span>
                 </Link>
               );
             })}
@@ -377,15 +369,11 @@ const Navbar = () => {
               >
                 <LayoutDashboardIcon
                   className={`w-5 h-5 transition-transform ${
-                    activeTab === "dashboard"
-                      ? "scale-110"
-                      : ""
+                    activeTab === "dashboard" ? "scale-110" : ""
                   }`}
                 />
 
-                <span className="text-[11px] mt-1">
-                  Dashboard
-                </span>
+                <span className="text-[11px] mt-1">Dashboard</span>
               </Link>
             ) : (
               <Link
@@ -399,15 +387,11 @@ const Navbar = () => {
               >
                 <User
                   className={`w-5 h-5 transition-transform ${
-                    activeTab === "profile"
-                      ? "scale-110"
-                      : ""
+                    activeTab === "profile" ? "scale-110" : ""
                   }`}
                 />
 
-                <span className="text-[11px] mt-1">
-                  Profile
-                </span>
+                <span className="text-[11px] mt-1">Profile</span>
               </Link>
             )}
           </div>

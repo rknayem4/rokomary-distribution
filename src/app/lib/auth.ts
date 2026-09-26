@@ -7,6 +7,7 @@ if (!process.env.MONGODB_URI) {
 }
 
 const client = new MongoClient(process.env.MONGODB_URI);
+
 const db = client.db("rokomary-distribution");
 
 export const auth = betterAuth({
@@ -18,7 +19,22 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
-        defaultValue: "CLIENT",
+        defaultValue: "RETAILER",
+        required: false,
+      },
+
+      phone: {
+        type: "string",
+        required: false,
+      },
+
+      retailer: {
+        type: "string",
+        required: false,
+      },
+
+      address: {
+        type: "string",
         required: false,
       },
     },
