@@ -81,7 +81,7 @@ const LoginPage = () => {
             <div className="flex justify-center">
               <Link href="/">
                 <img
-                  src="/assats/rokomary-distribution.svg"
+                  src="/assats/rokomary-distribution2.svg"
                   alt="Rokomary Distribution"
                   className="max-w-50 p-2"
                 />

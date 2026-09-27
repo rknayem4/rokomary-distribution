@@ -125,7 +125,7 @@ const Navbar = () => {
           Desktop / Tablet Navbar
       ====================================================== */}
 
-      <div className="max-w-5xl mx-auto px-3">
+      <div className="max-w-7xl mx-auto px-3">
         <div className="flex items-center justify-between">
           {/* --------------------------------------------------
               Logo
