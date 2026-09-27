@@ -73,6 +73,7 @@ const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
 
   const currentUser = session?.user;
+  console.log()
 
   // ----------------------------------------------------------
   // User Role
@@ -197,9 +198,9 @@ const Navbar = () => {
 
                   {/* Avatar */}
 
-                  {currentUser?.avatarUrl ? (
+                  {currentUser?.image ? (
                     <img
-                      src={currentUser.avatarUrl}
+                      src={currentUser?.image}
                       alt={currentUser.name}
                       className="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-500/50"
                     />
@@ -240,7 +241,7 @@ const Navbar = () => {
 
                     {isAdminOrEmployee && (
                       <Link
-                        href="/admin"
+                        href="/dashboard/admin"
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-indigo-300 hover:bg-indigo-600/10 hover:text-indigo-200 transition"
                       >
@@ -359,7 +360,7 @@ const Navbar = () => {
 
             {isAdminOrEmployee ? (
               <Link
-                href="/admin"
+                href="/dashboard/admin"
                 onClick={() => handleNavigation("dashboard")}
                 className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all duration-200 ${
                   activeTab === "dashboard"

@@ -32,10 +32,90 @@ const RegisterPage = () => {
   const [retailer, setRetailer] = useState("");
   const [address, setAddress] = useState("");
 
+  // image upload
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   // UI States
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // image upload function
+  const uploadToCloudinary = async (file: File) => {
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append(
+        "upload_preset",
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
+      );
+
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || "Image upload failed");
+      }
+
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  // select image function
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setErrorMessage("Please select a valid image.");
+      return;
+    }
+
+    // Validate file size - 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage("Image size must be less than 5MB.");
+      return;
+    }
+
+    setProfileImage(file);
+
+    // Preview
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
+    try {
+      const uploadedUrl = await uploadToCloudinary(file);
+
+      setImageUrl(uploadedUrl);
+    } catch (error) {
+      setErrorMessage("Failed to upload profile image.");
+      setProfileImage(null);
+      setImagePreview("");
+      setImageUrl("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +135,10 @@ const RegisterPage = () => {
         email,
         password,
         name,
+
+        // Profile image from Cloudinary
+        image: imageUrl,
+
         role,
         phone,
         retailer,
@@ -93,7 +177,7 @@ const RegisterPage = () => {
 
       <div className="w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 grid grid-cols-1 lg:grid-cols-12 relative z-10">
         {/* Left Side: Branding & Benefits */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-600 p-8 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-5 bg-linear-to-br from-indigo-700 via-indigo-600 to-blue-600 p-8 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px]" />
 
           <div className="relative z-10">
@@ -273,6 +357,38 @@ const RegisterPage = () => {
                   className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all"
                 />
               </div>
+            </div>
+
+            {/* Profile Image */}
+            <div className="flex flex-col items-center mb-6">
+              <label className="cursor-pointer group">
+                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center transition-all group-hover:border-indigo-500">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-12 h-12 text-slate-400" />
+                  )}
+                </div>
+
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                {isUploadingImage
+                  ? "Uploading image..."
+                  : imageUrl
+                    ? "Profile image uploaded ✓"
+                    : "Click to upload profile photo"}
+              </p>
             </div>
 
             {/* Password & Confirm Password */}
