@@ -40,3 +40,64 @@ export const getProducts = async ({
 
   return data;
 };
+
+
+
+/* ================= UPDATE PRODUCT ================= */
+
+export const updateProduct = async (id, productData) => {
+  const res = await fetch(
+    `${baseUrl}/api/products/${id}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(productData),
+    }
+  );
+
+  const text = await res.text();
+
+  console.log("UPDATE STATUS:", res.status);
+  console.log("UPDATE RESPONSE:", text);
+
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = {};
+  }
+
+  if (!res.ok) {
+    throw new Error(
+      data?.message ||
+        `Failed to update product (${res.status})`
+    );
+  }
+
+  return data;
+};
+
+
+/* ================= DELETE PRODUCT ================= */
+
+export const deleteProduct = async (id) => {
+  const res = await fetch(
+    `${baseUrl}/api/products/${id}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data?.message || "Failed to delete product"
+    );
+  }
+
+  return data;
+};

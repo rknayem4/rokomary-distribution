@@ -30,12 +30,11 @@ import {
 } from "@heroui/react";
 
 import { createProduct } from "@/app/lib/actions/products";
-import { Router } from "next/router";
-import { date } from "better-auth";
 const categories = [
   "Edible Oil",
   "Atta",
   "Maida",
+  "Suji",
   "Salt",
   "Canola Oil",
   "Mustard Oil",

@@ -17,7 +17,7 @@ const ProductsPage = async ({ searchParams }) => {
   });
 
   return (
-    <ProductsClient
+    <ProductsClient 
       initialProducts={data.products || []}
       pagination={data.pagination}
       initialSearch={search}

@@ -36,6 +36,20 @@ const ProductsClient = ({
   const totalPages = pagination?.totalPages || 1;
   const totalProducts = pagination?.totalProducts || 0;
 
+  const categories = [
+    "Edible Oil",
+    "Atta",
+    "Maida",
+    "Suji",
+    "Salt",
+    "Canola Oil",
+    "Mustard Oil",
+    "Rice",
+    "Masala",
+    "Water",
+    "Other",
+  ];
+
   /*
    * ------------------------------------------------
    * Search debounce
@@ -100,9 +114,7 @@ const ProductsClient = ({
    * ------------------------------------------------
    */
 
-  const handleCategoryChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
     setCategory(value);
@@ -121,9 +133,7 @@ const ProductsClient = ({
    * ------------------------------------------------
    */
 
-  const handleSortChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
     setSort(value);
@@ -209,7 +219,6 @@ const ProductsClient = ({
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
-
         {/* ================= HEADER ================= */}
 
         <div className="mb-7 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -252,7 +261,6 @@ const ProductsClient = ({
 
         <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_220px_220px_auto]">
-
             {/* Search */}
 
             <div className="relative">
@@ -308,14 +316,16 @@ const ProductsClient = ({
                   if you have a category API.
                 */}
 
-                <option value="Food">Food</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+
+                {/* <option value="Food">Food</option>
                 <option value="Beverage">Beverage</option>
-                <option value="Personal Care">
-                  Personal Care
-                </option>
-                <option value="Household">
-                  Household
-                </option>
+                <option value="Personal Care">Personal Care</option>
+                <option value="Household">Household</option> */}
               </select>
 
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
@@ -336,21 +346,13 @@ const ProductsClient = ({
                 onChange={handleSortChange}
                 className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-9 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
               >
-                <option value="latest">
-                  Latest Updated
-                </option>
+                <option value="latest">Latest Updated</option>
 
-                <option value="oldest">
-                  Oldest Updated
-                </option>
+                <option value="oldest">Oldest Updated</option>
 
-                <option value="price-low">
-                  Price: Low to High
-                </option>
+                <option value="price-low">Price: Low to High</option>
 
-                <option value="price-high">
-                  Price: High to Low
-                </option>
+                <option value="price-high">Price: High to Low</option>
               </select>
 
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
@@ -381,9 +383,7 @@ const ProductsClient = ({
                 {currentPage}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-slate-800">
-                {totalPages}
-              </span>
+              <span className="font-semibold text-slate-800">{totalPages}</span>
             </p>
 
             <p className="text-sm text-slate-500">
@@ -397,10 +397,7 @@ const ProductsClient = ({
         {products.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-              />
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : (
@@ -414,8 +411,7 @@ const ProductsClient = ({
             </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-              No products match your current search or
-              filter.
+              No products match your current search or filter.
             </p>
 
             {(search || category) && (
@@ -434,75 +430,59 @@ const ProductsClient = ({
 
         {totalPages > 1 && (
           <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
-
             <p className="text-sm text-slate-500">
               Page{" "}
               <span className="font-semibold text-slate-800">
                 {currentPage}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-slate-800">
-                {totalPages}
-              </span>
+              <span className="font-semibold text-slate-800">{totalPages}</span>
             </p>
 
             <div className="flex items-center gap-1.5">
-
               {/* Previous */}
 
               <button
                 type="button"
-                disabled={
-                  !pagination?.hasPreviousPage
-                }
-                onClick={() =>
-                  handlePageChange(currentPage - 1)
-                }
+                disabled={!pagination?.hasPreviousPage}
+                onClick={() => handlePageChange(currentPage - 1)}
                 className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft size={17} />
 
-                <span className="hidden sm:inline">
-                  Previous
-                </span>
+                <span className="hidden sm:inline">Previous</span>
               </button>
 
               {/* Pages */}
 
               <div className="flex items-center gap-1">
-                {getPageNumbers().map(
-                  (page, index) => {
-                    if (page === "...") {
-                      return (
-                        <span
-                          key={`dots-${index}`}
-                          className="px-2 text-slate-400"
-                        >
-                          ...
-                        </span>
-                      );
-                    }
-
+                {getPageNumbers().map((page, index) => {
+                  if (page === "...") {
                     return (
-                      <button
-                        key={page}
-                        type="button"
-                        onClick={() =>
-                          handlePageChange(
-                            page as number
-                          )
-                        }
-                        className={`h-10 min-w-10 rounded-xl px-3 text-sm font-semibold transition ${
-                          currentPage === page
-                            ? "bg-blue-600 text-white shadow-sm"
-                            : "text-slate-600 hover:bg-slate-100"
-                        }`}
+                      <span
+                        key={`dots-${index}`}
+                        className="px-2 text-slate-400"
                       >
-                        {page}
-                      </button>
+                        ...
+                      </span>
                     );
                   }
-                )}
+
+                  return (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() => handlePageChange(page as number)}
+                      className={`h-10 min-w-10 rounded-xl px-3 text-sm font-semibold transition ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Next */}
@@ -510,14 +490,10 @@ const ProductsClient = ({
               <button
                 type="button"
                 disabled={!pagination?.hasNextPage}
-                onClick={() =>
-                  handlePageChange(currentPage + 1)
-                }
+                onClick={() => handlePageChange(currentPage + 1)}
                 className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <span className="hidden sm:inline">
-                  Next
-                </span>
+                <span className="hidden sm:inline">Next</span>
 
                 <ChevronRight size={17} />
               </button>
@@ -704,7 +680,5 @@ const ProductsClient = ({
 /* =========================================================
    PRICE
 ========================================================= */
-
-
 
 export default ProductsClient;
