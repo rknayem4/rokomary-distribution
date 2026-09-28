@@ -71,9 +71,9 @@ const Navbar = () => {
   // ----------------------------------------------------------
 
   const { data: session, isPending } = authClient.useSession();
-    
+
   const currentUser = session?.user;
-  console.log()
+  console.log();
 
   // ----------------------------------------------------------
   // User Role

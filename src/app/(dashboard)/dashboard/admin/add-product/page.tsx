@@ -19,8 +19,19 @@ import {
   User,
 } from "lucide-react";
 
-import { Button, Input, Label, ListBox, Select, TextArea } from "@heroui/react";
+import {
+  Button,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  TextArea,
+  toast,
+} from "@heroui/react";
 
+import { createProduct } from "@/app/lib/actions/products";
+import { Router } from "next/router";
+import { date } from "better-auth";
 const categories = [
   "Edible Oil",
   "Atta",
@@ -175,9 +186,7 @@ export default function AddProductPage() {
     }
   };
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -250,10 +259,11 @@ export default function AddProductPage() {
     }
 
     if (isUploadingImage) {
-      setErrorMessage("Please wait until the product image finishes uploading.");
+      setErrorMessage(
+        "Please wait until the product image finishes uploading.",
+      );
       return;
     }
-
     const ProductData = {
       productName: formData.productName.trim(),
       productCode: formData.productCode.trim(),
@@ -272,8 +282,15 @@ export default function AddProductPage() {
       image: imageUrl,
     };
 
-    console.log("Product data:", ProductData);
-
+    // console.log("Product data:", ProductData);
+    try {
+      const result = await createProduct(ProductData);
+      toast.success(`Product successfully added`);
+      window.location.reload();
+      console.log(result);
+    } catch (error) {
+      console.error("Failed to create product:", error);
+    }
     // TODO: Send ProductData to your Express/MongoDB API.
     // Example: await fetch("/api/products", {
     //   method: "POST",
