@@ -44,11 +44,7 @@ const links = [
     href: "/dashboard/admin/manage-user",
     icon: Person,
   },
-  {
-    name: "Transactions History",
-    href: "/dashboard/admin/transactions-history",
-    icon: CreditCard,
-  },
+  
 ];
 
 export default function SidebarAdmin() {

@@ -94,3 +94,80 @@ export const getPublicEmployees = async ({
     throw error;
   }
 };
+
+// ==========================================
+// GET USERS
+// ==========================================
+
+export const getAdminUsers = async ({
+  search = "",
+  status = "all",
+  page = 1,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  params.set("search", search);
+
+  params.set("status", status);
+
+  params.set("page", String(page));
+
+  const res = await fetch(
+    `${baseUrl}/api/admin/users?${params.toString()}`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to load users");
+  }
+
+  return data;
+};
+
+// ==========================================
+// BLOCK / UNBLOCK
+// ==========================================
+
+export const updateUserStatus = async (userId, status) => {
+  const res = await fetch(`${baseUrl}/api/admin/users/${userId}/status`, {
+    method: "PATCH",
+
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      status,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to update user");
+  }
+
+  return data;
+};
+
+// ==========================================
+// DELETE USER
+// ==========================================
+
+export const deleteUser = async (userId) => {
+  const res = await fetch(`${baseUrl}/api/admin/users/${userId}`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to delete user");
+  }
+
+  return data;
+};

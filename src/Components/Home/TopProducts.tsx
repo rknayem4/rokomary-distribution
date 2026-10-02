@@ -224,97 +224,9 @@ const LatestProductCard = ({
         </h3>
 
 
-        {product.brand && (
+        
 
-          <p className="mt-1 text-sm text-slate-500">
-            {product.brand}
-          </p>
-
-        )}
-
-
-        {/* Prices */}
-
-        <div className="mt-4 grid grid-cols-3 divide-x divide-slate-100 rounded-xl border border-slate-100 bg-slate-50">
-
-          <Price
-            label="MRP"
-            value={
-              product.mrpPrice
-            }
-          />
-
-          <Price
-            label="TP"
-            value={
-              product.tpPrice
-            }
-          />
-
-          <Price
-            label="DP"
-            value={
-              product.dpPrice
-            }
-            highlight
-          />
-
-        </div>
-
-
-        {/* Bottom */}
-
-        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-
-          <div>
-
-            <p className="text-[11px] text-slate-400">
-              Stock
-            </p>
-
-            <p className="text-sm font-bold text-slate-700">
-              {stock.toLocaleString()}
-            </p>
-
-          </div>
-
-
-          {product.lastUpdate && (
-
-            <div className="text-right">
-
-              <p className="flex items-center justify-end gap-1 text-[11px] text-slate-400">
-
-                <RefreshCw
-                  size={11}
-                />
-
-                Updated
-
-              </p>
-
-              <p className="mt-0.5 text-xs font-medium text-slate-600">
-
-                {new Date(
-                  product.lastUpdate
-                ).toLocaleDateString(
-                  "en-BD",
-                  {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    timeZone:
-                      "Asia/Dhaka",
-                  }
-                )}
-
-              </p>
-
-            </div>
-
-          )}
-
-        </div>
+        
 
       </div>
 
@@ -323,37 +235,3 @@ const LatestProductCard = ({
 };
 
 
-// ==================================================
-// PRICE
-// ==================================================
-
-const Price = ({
-  label,
-  value,
-  highlight = false,
-}) => {
-
-  return (
-
-    <div className="p-3">
-
-      <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-        {label}
-      </p>
-
-      <p
-        className={`mt-1 text-sm font-bold ${
-          highlight
-            ? "text-blue-600"
-            : "text-slate-800"
-        }`}
-      >
-        ৳
-        {Number(
-          value || 0
-        ).toLocaleString()}
-      </p>
-
-    </div>
-  );
-};

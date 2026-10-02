@@ -1,10 +1,18 @@
-import React from 'react';
+import { getAdminUsers } from "@/app/lib/actions/employees";
+import ManageUsersClient from "@/Components/admin/ManageUsersClient";
 
-const ManageUserPage = () => {
+
+const ManageUserPage = async () => {
+  const data = await getAdminUsers({
+    page: 1,
+    status: "all",
+  });
+
   return (
-    <div>
-      ManageUserPage
-    </div>
+    <ManageUsersClient
+      initialUsers={data.users || []}
+      initialPagination={data.pagination}
+    />
   );
 };
 
