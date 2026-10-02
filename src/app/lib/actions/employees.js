@@ -1,9 +1,6 @@
 const baseUrl = process.env.NEXT_PUBLIC_PASE_URL;
 
-export const getEmployees = async ({
-  search = "",
-  status = "",
-} = {}) => {
+export const getEmployees = async ({ search = "", status = "" } = {}) => {
   try {
     const params = new URLSearchParams();
 
@@ -38,5 +35,62 @@ export const getEmployees = async ({
       success: false,
       employees: [],
     };
+  }
+};
+
+// ========================================
+// GET PUBLIC EMPLOYEES
+// ========================================
+
+export const getPublicEmployees = async ({
+  search = "",
+  status = "active",
+  page = 1,
+  limit = 12,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  params.set("search", search);
+
+  params.set("status", status);
+
+  params.set("page", String(page));
+
+  params.set("limit", String(limit));
+
+  const url = `${baseUrl}/api/public/employees?${params.toString()}`;
+
+  console.log("GET EMPLOYEES:", url);
+
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+    });
+
+    const text = await res.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("Backend returned:", text);
+
+      throw new Error(`Backend returned invalid JSON. Status: ${res.status}`);
+    }
+
+    if (!res.ok) {
+      console.error("Employee API Error:", data);
+
+      throw new Error(
+        data?.message || `Failed to load employees (${res.status})`,
+      );
+    }
+
+    return data;
+  } catch (error) {
+    console.error("getPublicEmployees ERROR:", error);
+
+    throw error;
   }
 };

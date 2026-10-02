@@ -1,7 +1,8 @@
-import ProductCategories from "@/Components/CategorySection";
-import HeroSection from "@/Components/HeroSection";
+import ProductCategories from "@/Components/Home/CategorySection";
+import HeroSection from "@/Components/Home/HeroSection";
+import DistributionService from "@/Components/Home/Service";
 import LatestProducts from "@/Components/Home/TopProducts";
-import DistributionService from "@/Components/Service";
+
 
 export default function Home() {
   return (

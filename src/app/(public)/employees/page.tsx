@@ -1,13 +1,29 @@
-import App from '@/Components/responsive_navbar_component';
-import React from 'react';
-import Loading from '../../loading';
 
-const EmployeesPage = () => {
+import { getPublicEmployees } from "@/app/lib/actions/employees";
+import EmployeesClient from "@/Components/Employee/EmployeesClient";
+
+
+const EmployeesPage = async () => {
+
+  const data =
+    await getPublicEmployees({
+      status: "active",
+      page: 1,
+      limit: 12,
+    });
+
+
   return (
-    <div>
-      employee page
-    </div>
+    <EmployeesClient
+      initialEmployees={
+        data.employees || []
+      }
+      pagination={
+        data.pagination
+      }
+    />
   );
 };
+
 
 export default EmployeesPage;
