@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
-      <LatestProducts />
       <ProductCategories />
+      <LatestProducts />
       <DistributionService />
     </div>
   );
