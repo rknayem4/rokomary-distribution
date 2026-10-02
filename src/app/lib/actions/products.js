@@ -18,6 +18,7 @@ export const getProducts = async ({
   limit = 12,
   search = "",
   category = "",
+  status = "",
   sort = "latest",
 } = {}) => {
   const params = new URLSearchParams({
@@ -25,6 +26,7 @@ export const getProducts = async ({
     limit: String(limit),
     search,
     category,
+    status,
     sort,
   });
 
@@ -41,63 +43,117 @@ export const getProducts = async ({
   return data;
 };
 
-
-
-/* ================= UPDATE PRODUCT ================= */
+// ========================================
+// UPDATE PRODUCT
+// ========================================
 
 export const updateProduct = async (id, productData) => {
-  const res = await fetch(
-    `${baseUrl}/api/products/${id}`,
-    {
+  try {
+    const res = await fetch(`${baseUrl}/api/products/${id}`, {
       method: "PATCH",
+
       headers: {
         "Content-Type": "application/json",
       },
+
       body: JSON.stringify(productData),
+
+      cache: "no-store",
+    });
+
+    const text = await res.text();
+
+    let data = {};
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {};
     }
-  );
 
-  const text = await res.text();
+    console.log("UPDATE STATUS:", res.status);
 
-  console.log("UPDATE STATUS:", res.status);
-  console.log("UPDATE RESPONSE:", text);
+    console.log("UPDATE RESPONSE:", data);
 
-  let data;
+    if (!res.ok) {
+      throw new Error(
+        data?.message || `Failed to update product (${res.status})`,
+      );
+    }
 
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = {};
+    return data;
+  } catch (error) {
+    console.error("updateProduct error:", error);
+
+    throw error;
   }
-
-  if (!res.ok) {
-    throw new Error(
-      data?.message ||
-        `Failed to update product (${res.status})`
-    );
-  }
-
-  return data;
 };
 
-
-/* ================= DELETE PRODUCT ================= */
+// ========================================
+// DELETE PRODUCT
+// ========================================
 
 export const deleteProduct = async (id) => {
-  const res = await fetch(
-    `${baseUrl}/api/products/${id}`,
-    {
+  try {
+    const res = await fetch(`${baseUrl}/api/products/${id}`, {
       method: "DELETE",
+      cache: "no-store",
+    });
+
+    const text = await res.text();
+
+    let data = {};
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = {};
     }
-  );
 
-  const data = await res.json();
+    console.log("DELETE STATUS:", res.status);
 
-  if (!res.ok) {
-    throw new Error(
-      data?.message || "Failed to delete product"
-    );
+    console.log("DELETE RESPONSE:", data);
+
+    if (!res.ok) {
+      throw new Error(
+        data?.message || `Failed to delete product (${res.status})`,
+      );
+    }
+
+    return data;
+  } catch (error) {
+    console.error("deleteProduct error:", error);
+
+    throw error;
   }
+};
 
-  return data;
+// Latest 6 Products
+export const getLatestProducts = async () => {
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/products/top-latest`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data?.message ||
+          "Failed to get latest products"
+      );
+    }
+
+    return data.products || [];
+  } catch (error) {
+    console.error(
+      "getLatestProducts error:",
+      error
+    );
+
+    return [];
+  }
 };

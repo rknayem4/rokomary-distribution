@@ -17,31 +17,31 @@ import {
 const categories = [
   {
     name: "Edible Oil",
-    slug: "edible-oil",
+    slug: "Edible+Oil",
     icon: Droplets,
     description: "Quality cooking oils",
   },
   {
     name: "Atta",
-    slug: "atta",
+    slug: "Atta",
     icon: Wheat,
     description: "Fresh & quality atta",
   },
   {
     name: "Maida",
-    slug: "maida",
+    slug: "Maida",
     icon: Soup,
     description: "Premium quality maida",
   },
   {
     name: "Salt",
-    slug: "salt",
+    slug: "Salt",
     icon: Mountain,
     description: "Essential salt products",
   },
   {
     name: "Cenola Oil",
-    slug: "cenola-oil",
+    slug: "Cenola+oil",
     icon: Droplets,
     description: "Cenola cooking oil",
   },
@@ -65,13 +65,13 @@ const categories = [
   },
   {
     name: "Water",
-    slug: "water",
+    slug: "Water",
     icon: GlassWater,
     description: "Drinking water",
   },
   {
     name: "Other Products",
-    slug: "other",
+    slug: "Other",
     icon: Package,
     description: "More FMCG products",
   },

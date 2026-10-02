@@ -92,9 +92,9 @@ const ProductCard = ({ product }) => {
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-y border-slate-100">
         <Price label={`${product.packagingType} Size`} value={product.cartonSize | 0} highlight />
 
-        <Price label="TP" value={product.tpPrice} />
+        <Price label="TP Price" value={product.tpPrice} />
 
-        <Price label="MRP" value={product.mrpPrice} />
+        <Price label="MRP Price" value={product.mrpPrice} />
       </div>
 
       {/* ================= DETAILS ================= */}
@@ -154,7 +154,7 @@ const Price = ({ label, value, highlight = false }) => {
           highlight ? "text-blue-600" : "text-slate-900"
         }`}
       >
-        ৳{Number(value || 0).toLocaleString()}
+        {Number(value || 0).toLocaleString()}
       </p>
     </div>
   );
