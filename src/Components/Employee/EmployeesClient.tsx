@@ -6,8 +6,7 @@ import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 import EmployeeCard, { Employee } from "./EmaployeeCard";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ;
+const BACKEND_URL = process.env.NEXT_PUBLIC_PASE_URL;
 
 type EmployeeStatus = "active" | "inactive" | "all";
 
