@@ -33,7 +33,7 @@ const LoginPage = () => {
 
     try {
       const { data, error } = await authClient.signIn.email({
-        email: email.trim(),
+         email,
         password,
         rememberMe,
       });
