@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { auth } from "@/app/lib/auth";
 
 const EXPRESS_API_URL =
-  process.env.NEXT_PUBLIC_PASE_URL || "http://localhost:8000";
+  process.env.NEXT_PUBLIC_PASE_URL ;
 
 export async function POST(request: Request) {
   try {
