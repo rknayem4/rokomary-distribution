@@ -21,12 +21,8 @@ type MobileSidebarProps = {
   links: SidebarLink[];
 };
 
-export default function MobileSidebar({
-  links,
-}: MobileSidebarProps) {
-  const [selected, setSelected] = useState<Set<string>>(
-    new Set(),
-  );
+export default function MobileSidebar({ links }: MobileSidebarProps) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const router = useRouter();
 
@@ -43,11 +39,7 @@ export default function MobileSidebar({
 
       {/* Mobile Menu */}
       <Dropdown>
-        <Button
-          isIconOnly
-          aria-label="Menu"
-          variant="ghost"
-        >
+        <Button isIconOnly aria-label="Menu" variant="ghost">
           <Bars width={32} height={32} />
         </Button>
 
@@ -61,7 +53,7 @@ export default function MobileSidebar({
                 return;
               }
 
-              setSelected(new Set(keys));
+              setSelected(new Set(Array.from(keys).map(String)));
             }}
           >
             <Dropdown.Section>
@@ -80,12 +72,7 @@ export default function MobileSidebar({
                     <Dropdown.ItemIndicator />
 
                     <div className="flex items-center gap-3">
-                      {Icon && (
-                        <Icon
-                          width={20}
-                          height={20}
-                        />
-                      )}
+                      {Icon && <Icon width={20} height={20} />}
 
                       <Label>{link.name}</Label>
                     </div>

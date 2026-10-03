@@ -1,15 +1,32 @@
 const baseUrl = process.env.NEXT_PUBLIC_PASE_URL;
 
+// ========================================
+// CREATE PRODUCT
+// ========================================
+
 export const createProduct = async (newProduct) => {
   const res = await fetch(`${baseUrl}/api/add-product`, {
     method: "POST",
     headers: {
-      "Content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(newProduct),
   });
-  return res.json();
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data?.message || "Failed to create product"
+    );
+  }
+
+  return data;
 };
+
+// ========================================
+// GET PRODUCTS
+// ========================================
 
 export const getProducts = async ({
   page = 1,
@@ -28,14 +45,19 @@ export const getProducts = async ({
     sort,
   });
 
-  const res = await fetch(`${baseUrl}/api/products?${params.toString()}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${baseUrl}/api/products?${params.toString()}`,
+    {
+      cache: "no-store",
+    }
+  );
 
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data?.message || "Failed to get products");
+    throw new Error(
+      data?.message || "Failed to get products"
+    );
   }
 
   return data;
@@ -47,35 +69,44 @@ export const getProducts = async ({
 
 export const updateProduct = async (id, productData) => {
   try {
-    const res = await fetch(`${baseUrl}/api/products/${id}`, {
-      method: "PATCH",
+    const res = await fetch(
+      `${baseUrl}/api/products/${id}`,
+      {
+        method: "PATCH",
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-      body: JSON.stringify(productData),
+        body: JSON.stringify(productData),
 
-      cache: "no-store",
-    });
+        cache: "no-store",
+      }
+    );
 
     const text = await res.text();
 
-    let data = {};
+    let data = {
+      success: false,
+      message: "",
+    };
 
     try {
       data = JSON.parse(text);
     } catch {
-      data = {};
+      data = {
+        success: false,
+        message: "Invalid server response",
+      };
     }
 
     console.log("UPDATE STATUS:", res.status);
-
     console.log("UPDATE RESPONSE:", data);
 
     if (!res.ok) {
       throw new Error(
-        data?.message || `Failed to update product (${res.status})`,
+        data?.message ||
+          `Failed to update product (${res.status})`
       );
     }
 
@@ -93,28 +124,37 @@ export const updateProduct = async (id, productData) => {
 
 export const deleteProduct = async (id) => {
   try {
-    const res = await fetch(`${baseUrl}/api/products/${id}`, {
-      method: "DELETE",
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${baseUrl}/api/products/${id}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+      }
+    );
 
     const text = await res.text();
 
-    let data = {};
+    let data = {
+      success: false,
+      message: "",
+    };
 
     try {
       data = JSON.parse(text);
     } catch {
-      data = {};
+      data = {
+        success: false,
+        message: "Invalid server response",
+      };
     }
 
     console.log("DELETE STATUS:", res.status);
-
     console.log("DELETE RESPONSE:", data);
 
     if (!res.ok) {
       throw new Error(
-        data?.message || `Failed to delete product (${res.status})`,
+        data?.message ||
+          `Failed to delete product (${res.status})`
       );
     }
 
@@ -126,7 +166,10 @@ export const deleteProduct = async (id) => {
   }
 };
 
-// Latest 6 Products
+// ========================================
+// LATEST 6 PRODUCTS
+// ========================================
+
 export const getLatestProducts = async () => {
   try {
     const res = await fetch(

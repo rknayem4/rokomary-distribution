@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   Filter,
@@ -13,10 +12,12 @@ import {
   RefreshCw,
   ArrowDownUp,
 } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 import ProductCard from "./ProductCard";
 
 /* =========================================================
-   TYPES
+   Product Type
 ========================================================= */
 
 export type Product = {
@@ -47,10 +48,13 @@ export type Product = {
   status?: boolean | string | null;
 
   lastUpdate?: string | Date | null;
-
   createdAt?: string | Date | null;
   updatedAt?: string | Date | null;
 };
+
+/* =========================================================
+   Pagination Type
+========================================================= */
 
 export type ProductPagination = {
   currentPage: number;
@@ -60,13 +64,25 @@ export type ProductPagination = {
   hasNextPage: boolean;
 };
 
+/* =========================================================
+   Props
+========================================================= */
+
 type ProductsClientProps = {
   initialProducts?: Product[];
+
   pagination?: ProductPagination;
+
   initialSearch?: string;
+
   initialCategory?: string;
+
   initialSort?: string;
 };
+
+/* =========================================================
+   URL Update Type
+========================================================= */
 
 type UpdateURLParams = {
   search?: string;
@@ -76,7 +92,7 @@ type UpdateURLParams = {
 };
 
 /* =========================================================
-   COMPONENT
+   Component
 ========================================================= */
 
 const ProductsClient = ({
@@ -87,22 +103,40 @@ const ProductsClient = ({
   initialSort = "latest",
 }: ProductsClientProps) => {
   const router = useRouter();
+
   const pathname = usePathname();
+
   const searchParams = useSearchParams();
 
+  /* =======================================================
+     States
+  ======================================================= */
+
   const [search, setSearch] = useState<string>(initialSearch);
+
   const [category, setCategory] = useState<string>(initialCategory);
+
   const [sort, setSort] = useState<string>(initialSort);
+
+  /* =======================================================
+     Products
+  ======================================================= */
 
   const products: Product[] = initialProducts;
 
+  /* =======================================================
+     Pagination Safe Values
+  ======================================================= */
+
   const currentPage = pagination?.currentPage ?? 1;
+
   const totalPages = pagination?.totalPages ?? 1;
+
   const totalProducts = pagination?.totalProducts ?? 0;
 
-  /* =========================================================
-     CATEGORIES
-  ========================================================= */
+  /* =======================================================
+     Categories
+  ======================================================= */
 
   const categories: string[] = [
     "Edible Oil",
@@ -118,9 +152,9 @@ const ProductsClient = ({
     "Other",
   ];
 
-  /* =========================================================
-     SEARCH DEBOUNCE
-  ========================================================= */
+  /* =======================================================
+     Search Effect
+  ======================================================= */
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -138,12 +172,14 @@ const ProductsClient = ({
       });
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [search]);
 
-  /* =========================================================
-     UPDATE URL
-  ========================================================= */
+  /* =======================================================
+     Update URL
+  ======================================================= */
 
   const updateURL = ({
     search: newSearch = search,
@@ -153,18 +189,22 @@ const ProductsClient = ({
   }: UpdateURLParams = {}) => {
     const params = new URLSearchParams();
 
+    /* Search */
     if (newSearch.trim()) {
       params.set("search", newSearch.trim());
     }
 
+    /* Category */
     if (newCategory) {
       params.set("category", newCategory);
     }
 
+    /* Sort */
     if (newSort && newSort !== "latest") {
       params.set("sort", newSort);
     }
 
+    /* Page */
     if (page > 1) {
       params.set("page", String(page));
     }
@@ -174,13 +214,11 @@ const ProductsClient = ({
     router.push(query ? `${pathname}?${query}` : pathname);
   };
 
-  /* =========================================================
-     CATEGORY CHANGE
-  ========================================================= */
+  /* =======================================================
+     Category Change
+  ======================================================= */
 
-  const handleCategoryChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
     setCategory(value);
@@ -193,13 +231,11 @@ const ProductsClient = ({
     });
   };
 
-  /* =========================================================
-     SORT CHANGE
-  ========================================================= */
+  /* =======================================================
+     Sort Change
+  ======================================================= */
 
-  const handleSortChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
 
     setSort(value);
@@ -212,9 +248,9 @@ const ProductsClient = ({
     });
   };
 
-  /* =========================================================
-     PAGINATION
-  ========================================================= */
+  /* =======================================================
+     Page Change
+  ======================================================= */
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) {
@@ -229,25 +265,28 @@ const ProductsClient = ({
     });
   };
 
-  /* =========================================================
-     CLEAR FILTERS
-  ========================================================= */
+  /* =======================================================
+     Clear Filters
+  ======================================================= */
 
   const clearFilters = () => {
     setSearch("");
+
     setCategory("");
+
     setSort("latest");
 
     router.push(pathname);
   };
 
-  /* =========================================================
-     PAGE NUMBERS
-  ========================================================= */
+  /* =======================================================
+     Page Numbers
+  ======================================================= */
 
   const getPageNumbers = (): (number | string)[] => {
     const pages: (number | string)[] = [];
 
+    /* If pages <= 7 */
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -256,63 +295,77 @@ const ProductsClient = ({
       return pages;
     }
 
+    /* First page */
     pages.push(1);
 
+    /* Left dots */
     if (currentPage > 3) {
       pages.push("...");
     }
 
+    /* Middle pages */
     const start = Math.max(2, currentPage - 1);
+
     const end = Math.min(totalPages - 1, currentPage + 1);
 
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
 
+    /* Right dots */
     if (currentPage < totalPages - 2) {
       pages.push("...");
     }
 
+    /* Last page */
     pages.push(totalPages);
 
     return pages;
   };
 
-  /* =========================================================
-     RENDER
-  ========================================================= */
+  /* =======================================================
+     Active Filter Check
+  ======================================================= */
+
+  const hasFilters =
+    search.trim() !== "" || category !== "" || sort !== "latest";
+
+  /* =======================================================
+     JSX
+  ======================================================= */
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+    <section className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* ================= HEADER ================= */}
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
-        <div className="mb-7 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-                <Package size={22} />
-              </div>
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-600">
+              Our Products
+            </p>
 
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-                All Products
-              </h1>
-            </div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+              All Products
+            </h1>
 
-            <p className="text-sm text-slate-500">
-              Browse, search and manage your products
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+              Browse our complete product collection, search products, filter by
+              category and sort according to your preference.
             </p>
           </div>
 
-          {/* Total */}
+          {/* Product Count */}
 
-          <div className="flex w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <Boxes size={19} />
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Boxes size={22} />
             </div>
 
             <div>
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs font-medium text-slate-400">
                 Total Products
               </p>
 
@@ -323,221 +376,248 @@ const ProductsClient = ({
           </div>
         </div>
 
-        {/* ================= FILTER BAR ================= */}
+        {/* =================================================
+            FILTER BOX
+        ================================================= */}
 
-        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_220px_220px_auto]">
-            {/* Search */}
+        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_220px_200px_auto]">
+            {/* ================= SEARCH ================= */}
 
             <div className="relative">
               <Search
                 size={19}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               />
 
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search product name, code or brand..."
-                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-10 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearch(e.target.value)
+                }
+                placeholder="Search product name, code, brand..."
+                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               />
 
               {search && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setSearch("");
-
-                    updateURL({
-                      search: "",
-                      category,
-                      sort,
-                      page: 1,
-                    });
-                  }}
-                  className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  aria-label="Clear search"
                 >
                   <X size={16} />
                 </button>
               )}
             </div>
 
-            {/* Category */}
+            {/* ================= CATEGORY ================= */}
 
             <div className="relative">
               <Filter
-                size={18}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               />
 
               <select
                 value={category}
                 onChange={handleCategoryChange}
-                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-9 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+                className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-9 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               >
                 <option value="">All Categories</option>
 
-                {categories.map((item) => (
+                {categories.map((item: string) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
                 ))}
               </select>
 
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
                 ▼
               </span>
             </div>
 
-            {/* Sort */}
+            {/* ================= SORT ================= */}
 
             <div className="relative">
               <ArrowDownUp
-                size={18}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                size={17}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
               />
 
               <select
                 value={sort}
                 onChange={handleSortChange}
-                className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-9 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+                className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-9 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               >
-                <option value="latest">
-                  Latest Updated
-                </option>
+                <option value="latest">Latest Products</option>
 
-                <option value="oldest">
-                  Oldest Updated
-                </option>
+                <option value="oldest">Oldest Products</option>
 
-                <option value="price-low">
-                  Price: Low to High
-                </option>
+                <option value="name-asc">Name: A-Z</option>
 
-                <option value="price-high">
-                  Price: High to Low
-                </option>
+                <option value="name-desc">Name: Z-A</option>
+
+                <option value="price-low">Price: Low to High</option>
+
+                <option value="price-high">Price: High to Low</option>
+
+                <option value="stock-high">Stock: High to Low</option>
+
+                <option value="stock-low">Stock: Low to High</option>
               </select>
 
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
                 ▼
               </span>
             </div>
 
-            {/* Clear */}
+            {/* ================= CLEAR ================= */}
 
-            {(search || category || sort !== "latest") && (
+            {hasFilters ? (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-5 text-sm font-semibold text-red-600 transition hover:bg-red-100"
               >
-                <RefreshCw size={17} />
-                Clear
+                <X size={17} />
+
+                <span>Clear</span>
               </button>
+            ) : (
+              <div className="hidden lg:block" />
             )}
-          </div>
-
-          {/* Result */}
-
-          <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
-              Page{" "}
-              <span className="font-semibold text-slate-800">
-                {currentPage}
-              </span>{" "}
-              of{" "}
-              <span className="font-semibold text-slate-800">
-                {totalPages}
-              </span>
-            </p>
-
-            <p className="text-sm text-slate-500">
-              {totalProducts} products found
-            </p>
           </div>
         </div>
 
-        {/* ================= PRODUCT GRID ================= */}
+        {/* =================================================
+            RESULT INFO
+        ================================================= */}
+
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <Package size={17} className="text-blue-500" />
+
+            <span>
+              Showing{" "}
+              <span className="font-semibold text-slate-700">
+                {products.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-semibold text-slate-700">
+                {totalProducts}
+              </span>{" "}
+              products
+            </span>
+          </div>
+
+          {category && (
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-slate-400">Category:</span>
+
+              <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-600">
+                {category}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* =================================================
+            PRODUCTS
+        ================================================= */}
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-              />
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product: Product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : (
+          /* ===============================================
+             EMPTY STATE
+          =============================================== */
+
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-              <Package size={30} />
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+              <Package size={30} className="text-slate-400" />
             </div>
 
-            <h3 className="text-lg font-bold text-slate-800">
-              No products found
-            </h3>
+            <h2 className="text-xl font-bold text-slate-800">
+              No Products Found
+            </h2>
 
-            <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
-              No products match your current search or filter.
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+              We couldn't find any products matching your search or selected
+              filters.
             </p>
 
-            {(search || category) && (
+            {hasFilters && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
               >
+                <RefreshCw size={16} />
                 Clear Filters
               </button>
             )}
           </div>
         )}
 
-        {/* ================= PAGINATION ================= */}
+        {/* =================================================
+            PAGINATION
+        ================================================= */}
 
-        {totalPages > 1 && (
-          <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
+        {products.length > 0 && totalPages > 1 && (
+          <div className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
+            {/* Page Information */}
+
             <p className="text-sm text-slate-500">
               Page{" "}
-              <span className="font-semibold text-slate-800">
+              <span className="font-semibold text-slate-700">
                 {currentPage}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-slate-800">
-                {totalPages}
-              </span>
+              <span className="font-semibold text-slate-700">{totalPages}</span>
             </p>
 
-            <div className="flex items-center gap-1.5">
+            {/* Pagination */}
+
+            <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
               {/* Previous */}
 
               <button
                 type="button"
-                disabled={!pagination?.hasPreviousPage}
-                onClick={() =>
-                  handlePageChange(currentPage - 1)
-                }
-                className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage <= 1}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Previous page"
               >
-                <ChevronLeft size={17} />
-
-                <span className="hidden sm:inline">
-                  Previous
-                </span>
+                <ChevronLeft size={18} />
               </button>
 
-              {/* Pages */}
+              {/* Page Numbers */}
 
               <div className="flex items-center gap-1">
                 {getPageNumbers().map((page, index) => {
-                  if (page === "...") {
+                  /*
+                   * Important:
+                   * Here we narrow the union type.
+                   *
+                   * page can be:
+                   * number | string
+                   *
+                   * After this check,
+                   * TypeScript knows page is number.
+                   */
+
+                  if (typeof page === "string") {
                     return (
                       <span
                         key={`dots-${index}`}
-                        className="px-2 text-slate-400"
+                        className="px-2 text-sm text-slate-400"
                       >
                         ...
                       </span>
@@ -548,10 +628,8 @@ const ProductsClient = ({
                     <button
                       key={page}
                       type="button"
-                      onClick={() =>
-                        handlePageChange(page)
-                      }
-                      className={`h-10 min-w-10 rounded-xl px-3 text-sm font-semibold transition ${
+                      onClick={() => handlePageChange(page)}
+                      className={`min-w-9 rounded-lg px-3 py-2 text-sm font-semibold transition ${
                         currentPage === page
                           ? "bg-blue-600 text-white shadow-sm"
                           : "text-slate-600 hover:bg-slate-100"
@@ -567,23 +645,18 @@ const ProductsClient = ({
 
               <button
                 type="button"
-                disabled={!pagination?.hasNextPage}
-                onClick={() =>
-                  handlePageChange(currentPage + 1)
-                }
-                className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Next page"
               >
-                <span className="hidden sm:inline">
-                  Next
-                </span>
-
-                <ChevronRight size={17} />
+                <ChevronRight size={18} />
               </button>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

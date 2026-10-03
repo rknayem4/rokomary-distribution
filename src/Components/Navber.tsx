@@ -81,7 +81,7 @@ const Navbar = () => {
 
   const userRole = currentUser?.role as UserRole | undefined;
 
-  const isAdminOrEmployee = userRole === "admin" || userRole === "EMPLOYEE";
+  const isAdminOrEmployee = userRole === "ADMIN" || userRole === "EMPLOYEE";
 
   // ----------------------------------------------------------
   // Logout

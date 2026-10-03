@@ -1,6 +1,18 @@
 import { getProducts } from "@/app/lib/actions/products";
 import ProductsClient from "@/Components/ProductsClient";
-const ProductsPage = async ({ searchParams }) => {
+
+type SearchParams = {
+  search?: string;
+  category?: string;
+  sort?: string;
+  page?: string;
+};
+
+const ProductsPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) => {
   const params = await searchParams;
 
   const page = Number(params?.page) || 1;
@@ -17,7 +29,7 @@ const ProductsPage = async ({ searchParams }) => {
   });
 
   return (
-    <ProductsClient 
+    <ProductsClient
       initialProducts={data.products || []}
       pagination={data.pagination}
       initialSearch={search}

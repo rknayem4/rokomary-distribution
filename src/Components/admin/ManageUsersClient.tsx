@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import { updateUserStatus } from "@/app/lib/actions/employees";
-import { deleteUser } from "better-auth/api";
+// import { deleteUser } from "better-auth/api";
 
 // ========================================================
 // TYPES
@@ -86,8 +86,7 @@ const ManageUsersClient = ({
 
   const [users, setUsers] = useState<User[]>(initialUsers);
 
-  const [pagination, setPagination] =
-    useState<Pagination>(initialPagination);
+  const [pagination, setPagination] = useState<Pagination>(initialPagination);
 
   const [search, setSearch] = useState<string>("");
 
@@ -95,8 +94,7 @@ const ManageUsersClient = ({
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [actionLoading, setActionLoading] =
-    useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // ======================================================
   // FETCH USERS
@@ -116,19 +114,14 @@ const ManageUsersClient = ({
       params.set("status", currentStatus);
       params.set("page", String(page));
 
-      const response = await fetch(
-        `/api/admin/users?${params.toString()}`,
-        {
-          cache: "no-store",
-        },
-      );
+      const response = await fetch(`/api/admin/users?${params.toString()}`, {
+        cache: "no-store",
+      });
 
       const data: UsersApiResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to load users",
-        );
+        throw new Error(data.message || "Failed to load users");
       }
 
       setUsers(data.users || []);
@@ -159,9 +152,7 @@ const ManageUsersClient = ({
   // STATUS FILTER
   // ======================================================
 
-  const handleStatusFilter = (
-    newStatus: "all" | UserStatus,
-  ): void => {
+  const handleStatusFilter = (newStatus: "all" | UserStatus): void => {
     setStatus(newStatus);
 
     fetchUsers(1, search, newStatus);
@@ -178,15 +169,10 @@ const ManageUsersClient = ({
     try {
       setActionLoading(user._id);
 
-      const data: ActionResponse = await updateUserStatus(
-        user._id,
-        newStatus,
-      );
+      const data: ActionResponse = await updateUserStatus(user._id, newStatus);
 
       if (!data.success) {
-        throw new Error(
-          data.message || "Failed to update user status",
-        );
+        throw new Error(data.message || "Failed to update user status");
       }
 
       setUsers((previous: User[]) =>
@@ -201,10 +187,7 @@ const ManageUsersClient = ({
         ),
       );
 
-      alert(
-        data.message ||
-          "User status updated successfully",
-      );
+      alert(data.message || "User status updated successfully");
     } catch (error: unknown) {
       alert(getErrorMessage(error));
     } finally {
@@ -218,9 +201,7 @@ const ManageUsersClient = ({
 
   const handleDelete = async (user: User): Promise<void> => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${
-        user.name || user.email
-      }?`,
+      `Are you sure you want to delete ${user.name || user.email}?`,
     );
 
     if (!confirmed) {
@@ -230,36 +211,32 @@ const ManageUsersClient = ({
     try {
       setActionLoading(user._id);
 
-      const response = await deleteUser(user._id);
+      const response = await fetch(`/api/admin/users/${user._id}`, {
+        method: "DELETE",
+        cache: "no-store",
+      });
 
       const data: ActionResponse = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to delete user",
-        );
+        throw new Error(data.message || "Failed to delete user");
       }
 
       if (data.success) {
-        setUsers((previous: User[]) =>
-          previous.filter(
-            (item: User) => item._id !== user._id,
-          ),
+        setUsers((previous) =>
+          previous.filter((item) => item._id !== user._id),
         );
 
-        setPagination((previous: Pagination) => ({
+        setPagination((previous) => ({
           ...previous,
-          totalUsers: Math.max(
-            previous.totalUsers - 1,
-            0,
-          ),
+          totalUsers: Math.max(previous.totalUsers - 1, 0),
         }));
 
-        alert(
-          data.message || "User deleted successfully",
-        );
+        alert(data.message || "User deleted successfully");
       }
     } catch (error: unknown) {
+      console.error("DELETE USER ERROR:", error);
+
       alert(getErrorMessage(error));
     } finally {
       setActionLoading(null);
@@ -273,7 +250,6 @@ const ManageUsersClient = ({
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
-
         {/* HEADER */}
 
         <div className="mb-6">
@@ -288,8 +264,7 @@ const ManageUsersClient = ({
               </h1>
 
               <p className="mt-1 text-sm text-slate-500">
-                Manage registered users, block or delete
-                accounts.
+                Manage registered users, block or delete accounts.
               </p>
             </div>
           </div>
@@ -299,7 +274,6 @@ const ManageUsersClient = ({
 
         <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row">
-
             {/* SEARCH */}
 
             <div className="relative flex-1">
@@ -310,9 +284,9 @@ const ManageUsersClient = ({
 
               <input
                 value={search}
-                onChange={(
-                  e: ChangeEvent<HTMLInputElement>,
-                ) => setSearch(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setSearch(e.target.value)
+                }
                 placeholder="Search by name or email..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50"
               />
@@ -322,14 +296,8 @@ const ManageUsersClient = ({
 
             <select
               value={status}
-              onChange={(
-                e: ChangeEvent<HTMLSelectElement>,
-              ) =>
-                handleStatusFilter(
-                  e.target.value as
-                    | "all"
-                    | UserStatus,
-                )
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                handleStatusFilter(e.target.value as "all" | UserStatus)
               }
               className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500"
             >
@@ -343,14 +311,11 @@ const ManageUsersClient = ({
         {/* TABLE */}
 
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
           {/* TABLE HEADER */}
 
           <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div>
-              <p className="text-sm font-bold text-slate-800">
-                All Users
-              </p>
+              <p className="text-sm font-bold text-slate-800">All Users</p>
 
               <p className="text-xs text-slate-400">
                 {pagination?.totalUsers || 0} total users
@@ -368,31 +333,23 @@ const ManageUsersClient = ({
             <div className="py-20 text-center">
               <div className="mx-auto h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
 
-              <p className="mt-3 text-sm text-slate-500">
-                Loading users...
-              </p>
+              <p className="mt-3 text-sm text-slate-500">Loading users...</p>
             </div>
           ) : users.length === 0 ? (
-
             /* EMPTY */
 
             <div className="py-20 text-center">
-              <Users
-                size={35}
-                className="mx-auto text-slate-300"
-              />
+              <Users size={35} className="mx-auto text-slate-300" />
 
               <p className="mt-3 font-semibold text-slate-700">
                 No users found
               </p>
             </div>
           ) : (
-
             /* TABLE */
 
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px]">
-
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400">
@@ -423,49 +380,35 @@ const ManageUsersClient = ({
 
                 <tbody className="divide-y divide-slate-100">
                   {users.map((user: User) => {
-                    const isAdmin =
-                      user.role === "ADMIN";
+                    const isAdmin = user.role === "ADMIN";
 
-                    const isBlocked =
-                      user.status === "blocked";
+                    const isBlocked = user.status === "blocked";
 
-                    const isLoading =
-                      actionLoading === user._id;
+                    const isLoading = actionLoading === user._id;
 
-                    const userImage =
-                      user.image ||
-                      user.profilePhoto ||
-                      null;
+                    const userImage = user.image || user.profilePhoto || null;
 
                     return (
                       <tr
                         key={user._id}
                         className="transition hover:bg-slate-50"
                       >
-
                         {/* USER */}
 
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-
                             <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-slate-100">
                               {userImage ? (
                                 <Image
                                   src={userImage}
-                                  alt={
-                                    user.name || "User"
-                                  }
+                                  alt={user.name || "User"}
                                   fill
                                   className="object-cover"
                                   sizes="44px"
                                 />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center text-sm font-bold text-slate-400">
-                                  {(
-                                    user.name ||
-                                    user.email ||
-                                    "U"
-                                  )
+                                  {(user.name || user.email || "U")
                                     .charAt(0)
                                     .toUpperCase()}
                                 </div>
@@ -478,8 +421,7 @@ const ManageUsersClient = ({
                               </p>
 
                               <p className="text-xs text-slate-400">
-                                ID:{" "}
-                                {String(user._id).slice(-8)}
+                                ID: {String(user._id).slice(-8)}
                               </p>
                             </div>
                           </div>
@@ -489,10 +431,7 @@ const ManageUsersClient = ({
 
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <Mail
-                              size={15}
-                              className="text-slate-400"
-                            />
+                            <Mail size={15} className="text-slate-400" />
 
                             {user.email}
                           </div>
@@ -516,9 +455,7 @@ const ManageUsersClient = ({
                                 : "bg-emerald-50 text-emerald-600"
                             }`}
                           >
-                            {isBlocked
-                              ? "Blocked"
-                              : "Active"}
+                            {isBlocked ? "Blocked" : "Active"}
                           </span>
                         </td>
 
@@ -526,9 +463,7 @@ const ManageUsersClient = ({
 
                         <td className="px-5 py-4 text-sm text-slate-500">
                           {user.createdAt
-                            ? new Date(
-                                user.createdAt,
-                              ).toLocaleDateString(
+                            ? new Date(user.createdAt).toLocaleDateString(
                                 "en-BD",
                                 {
                                   day: "2-digit",
@@ -543,17 +478,12 @@ const ManageUsersClient = ({
 
                         <td className="px-5 py-4">
                           <div className="flex justify-end gap-2">
-
                             {/* BLOCK / UNBLOCK */}
 
                             <button
                               type="button"
-                              disabled={
-                                isAdmin || isLoading
-                              }
-                              onClick={() =>
-                                handleStatus(user)
-                              }
+                              disabled={isAdmin || isLoading}
+                              onClick={() => handleStatus(user)}
                               title={
                                 isAdmin
                                   ? "Admin cannot be blocked"
@@ -573,21 +503,15 @@ const ManageUsersClient = ({
                                 <ShieldOff size={15} />
                               )}
 
-                              {isBlocked
-                                ? "Unblock"
-                                : "Block"}
+                              {isBlocked ? "Unblock" : "Block"}
                             </button>
 
                             {/* DELETE */}
 
                             <button
                               type="button"
-                              disabled={
-                                isAdmin || isLoading
-                              }
-                              onClick={() =>
-                                handleDelete(user)
-                              }
+                              disabled={isAdmin || isLoading}
+                              onClick={() => handleDelete(user)}
                               title={
                                 isAdmin
                                   ? "Admin cannot be deleted"
@@ -596,7 +520,6 @@ const ManageUsersClient = ({
                               className="flex h-9 items-center gap-1.5 rounded-lg bg-red-50 px-3 text-xs font-bold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
                             >
                               <Trash2 size={15} />
-
                               Delete
                             </button>
                           </div>
@@ -612,52 +535,39 @@ const ManageUsersClient = ({
 
         {/* PAGINATION */}
 
-        {!loading &&
-          pagination &&
-          pagination.totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-center gap-2">
+        {!loading && pagination && pagination.totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              disabled={!pagination.hasPreviousPage}
+              onClick={() => fetchUsers(pagination.currentPage - 1)}
+              className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={17} />
+              Previous
+            </button>
 
-              <button
-                type="button"
-                disabled={!pagination.hasPreviousPage}
-                onClick={() =>
-                  fetchUsers(
-                    pagination.currentPage - 1,
-                  )
-                }
-                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <ChevronLeft size={17} />
-                Previous
-              </button>
+            <span className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white">
+              {pagination.currentPage}
+            </span>
 
-              <span className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white">
-                {pagination.currentPage}
-              </span>
+            <span className="text-sm text-slate-400">of</span>
 
-              <span className="text-sm text-slate-400">
-                of
-              </span>
+            <span className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600">
+              {pagination.totalPages}
+            </span>
 
-              <span className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600">
-                {pagination.totalPages}
-              </span>
-
-              <button
-                type="button"
-                disabled={!pagination.hasNextPage}
-                onClick={() =>
-                  fetchUsers(
-                    pagination.currentPage + 1,
-                  )
-                }
-                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Next
-                <ChevronRight size={17} />
-              </button>
-            </div>
-          )}
+            <button
+              type="button"
+              disabled={!pagination.hasNextPage}
+              onClick={() => fetchUsers(pagination.currentPage + 1)}
+              className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+              <ChevronRight size={17} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
