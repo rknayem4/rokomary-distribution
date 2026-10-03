@@ -114,7 +114,7 @@ const ManageUsersClient = ({
       params.set("status", currentStatus);
       params.set("page", String(page));
 
-      const response = await fetch(`/api/admin/users?${params.toString()}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_PASE_URL}/api/admin/users?${params.toString()}`, {
         cache: "no-store",
       });
 

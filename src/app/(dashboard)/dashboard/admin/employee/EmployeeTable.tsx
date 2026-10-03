@@ -64,7 +64,7 @@ const EmployeeTable = ({
   // ========================================
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL;
+    process.env.NEXT_PUBLIC_PASE_URL;
 
   // ========================================
   // FETCH EMPLOYEES

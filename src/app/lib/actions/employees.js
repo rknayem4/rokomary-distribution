@@ -110,6 +110,12 @@ export const getAdminUsers = async ({
   params.set("status", status);
   params.set("page", String(page));
 
+  const baseUrl = process.env.NEXT_PUBLIC_PASE_URL;
+
+  if (!baseUrl) {
+    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  }
+
   const res = await fetch(`${baseUrl}/api/admin/users?${params.toString()}`, {
     cache: "no-store",
   });
