@@ -1,25 +1,26 @@
 import { getProducts } from "@/app/lib/actions/products";
 import AdminProductsClient from "@/Components/admin/AdminProductsClient";
 
+type SearchParams = {
+  search?: string;
+  category?: string;
+  status?: string;
+  sort?: string;
+  page?: string;
+};
+
 const AdminProductsPage = async ({
   searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
 }) => {
   const params = await searchParams;
 
-  const page =
-    Number(params?.page) || 1;
-
-  const search =
-    params?.search || "";
-
-  const category =
-    params?.category || "";
-
-  const status =
-    params?.status || "";
-
-  const sort =
-    params?.sort || "latest";
+  const page = Number(params?.page) || 1;
+  const search = params?.search || "";
+  const category = params?.category || "";
+  const status = params?.status || "";
+  const sort = params?.sort || "latest";
 
   const data = await getProducts({
     page,
@@ -32,12 +33,8 @@ const AdminProductsPage = async ({
 
   return (
     <AdminProductsClient
-      initialProducts={
-        data.products || []
-      }
-      pagination={
-        data.pagination
-      }
+      initialProducts={data.products || []}
+      pagination={data.pagination}
       initialSearch={search}
       initialCategory={category}
       initialStatus={status}

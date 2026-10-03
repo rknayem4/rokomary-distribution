@@ -1,24 +1,66 @@
 import Image from "next/image";
-import { Package, Boxes, RefreshCw } from "lucide-react";
+import { Package, RefreshCw } from "lucide-react";
 
-const ProductCard = ({ product }) => {
-  const stock = Number(product.stock || 0);
+type Product = {
+  _id: string;
+
+  productName: string;
+  productCode?: string | null;
+
+  image?: string | null;
+  category?: string | null;
+  brand?: string | null;
+
+  packagingType?: string | null;
+  cartonSize?: number | string | null;
+
+  tpPrice?: number | string | null;
+  mrpPrice?: number | string | null;
+  dpPrice?: number | string | null;
+
+  stock?: number | string | null;
+
+  lastUpdate?: string | Date | null;
+};
+
+type ProductCardProps = {
+  product: Product;
+};
+
+type PriceProps = {
+  label: string;
+  value?: number | string | null;
+  highlight?: boolean;
+};
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+const ProductCard = ({ product }: ProductCardProps) => {
+  const stock = Number(product.stock ?? 0);
 
   const stockStatus =
     stock === 0
       ? {
           text: "Out of Stock",
-          className: "border-red-100 bg-red-50 text-red-600",
+          className:
+            "border-red-100 bg-red-50 text-red-600",
         }
       : stock <= 10
         ? {
             text: "Low Stock",
-            className: "border-amber-100 bg-amber-50 text-amber-600",
+            className:
+              "border-amber-100 bg-amber-50 text-amber-600",
           }
         : {
             text: "In Stock",
-            className: "border-emerald-100 bg-emerald-50 text-emerald-600",
+            className:
+              "border-emerald-100 bg-emerald-50 text-emerald-600",
           };
+
+  const packagingLabel =
+    product.packagingType?.trim() || "Package";
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl">
@@ -38,7 +80,10 @@ const ProductCard = ({ product }) => {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-slate-400">
-              <Package size={50} strokeWidth={1.5} />
+              <Package
+                size={50}
+                strokeWidth={1.5}
+              />
             </div>
           )}
         </div>
@@ -90,17 +135,65 @@ const ProductCard = ({ product }) => {
       {/* ================= PRICES ================= */}
 
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-y border-slate-100">
-        <Price label={`${product.packagingType} Size`} value={product.cartonSize | 0} highlight />
+        <Price
+          label={`${packagingLabel} Size`}
+          value={product.cartonSize}
+          highlight
+        />
 
-        <Price label="TP Price" value={product.tpPrice} />
+        <Price
+          label="TP Price"
+          value={product.tpPrice}
+        />
 
-        <Price label="MRP Price" value={product.mrpPrice} />
+        <Price
+          label="MRP Price"
+          value={product.mrpPrice}
+        />
       </div>
 
       {/* ================= DETAILS ================= */}
 
       <div className="p-5">
-       
+        {/* Stock */}
+
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-400">
+              Stock
+            </p>
+
+            <p className="mt-1 text-lg font-bold text-slate-800">
+              {stock.toLocaleString("en-BD")}
+            </p>
+          </div>
+
+          {product.brand && (
+            <div className="text-right">
+              <p className="text-xs text-slate-400">
+                Brand
+              </p>
+
+              <p className="mt-1 max-w-32 truncate text-sm font-semibold text-slate-700">
+                {product.brand}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Weight / Package */}
+
+        {product.packagingType && (
+          <div className="mt-4 rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] text-slate-400">
+              Packaging
+            </p>
+
+            <p className="mt-1 text-sm font-semibold text-slate-700">
+              {product.packagingType}
+            </p>
+          </div>
+        )}
 
         {/* ================= LAST UPDATE ================= */}
 
@@ -112,10 +205,14 @@ const ProductCard = ({ product }) => {
               </div>
 
               <div>
-                <p className="text-[11px] text-slate-400">Last Updated</p>
+                <p className="text-[11px] text-slate-400">
+                  Last Updated
+                </p>
 
                 <p className="text-xs font-semibold text-slate-700">
-                  {new Date(product.lastUpdate).toLocaleDateString("en-BD", {
+                  {new Date(
+                    product.lastUpdate,
+                  ).toLocaleDateString("en-BD", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
@@ -126,7 +223,9 @@ const ProductCard = ({ product }) => {
             </div>
 
             <span className="text-xs font-medium text-slate-500">
-              {new Date(product.lastUpdate).toLocaleTimeString("en-BD", {
+              {new Date(
+                product.lastUpdate,
+              ).toLocaleTimeString("en-BD", {
                 hour: "2-digit",
                 minute: "2-digit",
                 hour12: true,
@@ -140,21 +239,31 @@ const ProductCard = ({ product }) => {
   );
 };
 
-/* ================= PRICE COMPONENT ================= */
+/* =========================================================
+   PRICE COMPONENT
+========================================================= */
 
-const Price = ({ label, value, highlight = false }) => {
+const Price = ({
+  label,
+  value,
+  highlight = false,
+}: PriceProps) => {
+  const numericValue = Number(value ?? 0);
+
   return (
-    <div className="p-4">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+    <div className="min-w-0 p-4">
+      <p className="truncate text-[11px] font-medium uppercase tracking-wide text-slate-400">
         {label}
       </p>
 
       <p
         className={`mt-1 text-base font-bold ${
-          highlight ? "text-blue-600" : "text-slate-900"
+          highlight
+            ? "text-blue-600"
+            : "text-slate-900"
         }`}
       >
-        {Number(value || 0).toLocaleString()}
+        {numericValue.toLocaleString("en-BD")}
       </p>
     </div>
   );

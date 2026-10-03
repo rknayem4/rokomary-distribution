@@ -96,7 +96,7 @@ export const getPublicEmployees = async ({
 };
 
 // ==========================================
-// GET USERS
+// GET ADMIN USERS
 // ==========================================
 
 export const getAdminUsers = async ({
@@ -107,17 +107,26 @@ export const getAdminUsers = async ({
   const params = new URLSearchParams();
 
   params.set("search", search);
-
   params.set("status", status);
-
   params.set("page", String(page));
 
-  const res = await fetch(
-    `${baseUrl}/api/admin/users?${params.toString()}`,
-    {
-      cache: "no-store",
-    },
-  );
+  const res = await fetch(`${baseUrl}/api/admin/users?${params.toString()}`, {
+    cache: "no-store",
+  });
+
+  const contentType = res.headers.get("content-type");
+
+  if (!contentType?.includes("application/json")) {
+    const text = await res.text();
+
+    console.error("GET ADMIN USERS NON-JSON RESPONSE:", {
+      status: res.status,
+      contentType,
+      response: text,
+    });
+
+    throw new Error(`Server returned ${res.status} instead of JSON`);
+  }
 
   const data = await res.json();
 
@@ -145,6 +154,20 @@ export const updateUserStatus = async (userId, status) => {
     }),
   });
 
+  const contentType = res.headers.get("content-type");
+
+  if (!contentType?.includes("application/json")) {
+    const text = await res.text();
+
+    console.error("UPDATE USER STATUS NON-JSON:", {
+      status: res.status,
+      contentType,
+      response: text,
+    });
+
+    throw new Error(`Server returned ${res.status} instead of JSON`);
+  }
+
   const data = await res.json();
 
   if (!res.ok) {
@@ -162,6 +185,20 @@ export const deleteUser = async (userId) => {
   const res = await fetch(`${baseUrl}/api/admin/users/${userId}`, {
     method: "DELETE",
   });
+
+  const contentType = res.headers.get("content-type");
+
+  if (!contentType?.includes("application/json")) {
+    const text = await res.text();
+
+    console.error("DELETE USER NON-JSON:", {
+      status: res.status,
+      contentType,
+      response: text,
+    });
+
+    throw new Error(`Server returned ${res.status} instead of JSON`);
+  }
 
   const data = await res.json();
 

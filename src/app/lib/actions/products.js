@@ -1,5 +1,3 @@
-"use server";
-
 const baseUrl = process.env.NEXT_PUBLIC_PASE_URL;
 
 export const createProduct = async (newProduct) => {

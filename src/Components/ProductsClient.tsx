@@ -15,28 +15,96 @@ import {
 } from "lucide-react";
 import ProductCard from "./ProductCard";
 
+/* =========================================================
+   TYPES
+========================================================= */
+
+export type Product = {
+  _id: string;
+
+  productName: string;
+  productCode?: string | null;
+  brand?: string | null;
+
+  image?: string | null;
+
+  weight?: string | number | null;
+  weightUnit?: string | null;
+
+  cartonSize?: string | number | null;
+  packagingType?: string | null;
+
+  mrpPrice?: number | null;
+  tpPrice?: number | null;
+  dpPrice?: number | null;
+
+  category?: string | null;
+
+  stock?: number | null;
+
+  description?: string | null;
+
+  status?: boolean | string | null;
+
+  lastUpdate?: string | Date | null;
+
+  createdAt?: string | Date | null;
+  updatedAt?: string | Date | null;
+};
+
+export type ProductPagination = {
+  currentPage: number;
+  totalPages: number;
+  totalProducts: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+};
+
+type ProductsClientProps = {
+  initialProducts?: Product[];
+  pagination?: ProductPagination;
+  initialSearch?: string;
+  initialCategory?: string;
+  initialSort?: string;
+};
+
+type UpdateURLParams = {
+  search?: string;
+  category?: string;
+  sort?: string;
+  page?: number;
+};
+
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 const ProductsClient = ({
   initialProducts = [],
   pagination,
   initialSearch = "",
   initialCategory = "",
   initialSort = "latest",
-}) => {
+}: ProductsClientProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [search, setSearch] = useState(initialSearch);
-  const [category, setCategory] = useState(initialCategory);
-  const [sort, setSort] = useState(initialSort);
+  const [search, setSearch] = useState<string>(initialSearch);
+  const [category, setCategory] = useState<string>(initialCategory);
+  const [sort, setSort] = useState<string>(initialSort);
 
-  const products = initialProducts;
+  const products: Product[] = initialProducts;
 
-  const currentPage = pagination?.currentPage || 1;
-  const totalPages = pagination?.totalPages || 1;
-  const totalProducts = pagination?.totalProducts || 0;
+  const currentPage = pagination?.currentPage ?? 1;
+  const totalPages = pagination?.totalPages ?? 1;
+  const totalProducts = pagination?.totalProducts ?? 0;
 
-  const categories = [
+  /* =========================================================
+     CATEGORIES
+  ========================================================= */
+
+  const categories: string[] = [
     "Edible Oil",
     "Atta",
     "Maida",
@@ -50,17 +118,17 @@ const ProductsClient = ({
     "Other",
   ];
 
-  /*
-   * ------------------------------------------------
-   * Search debounce
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     SEARCH DEBOUNCE
+  ========================================================= */
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const currentSearch = searchParams.get("search") || "";
+      const currentSearch = searchParams.get("search") ?? "";
 
-      if (search === currentSearch) return;
+      if (search === currentSearch) {
+        return;
+      }
 
       updateURL({
         search,
@@ -73,18 +141,16 @@ const ProductsClient = ({
     return () => clearTimeout(timer);
   }, [search]);
 
-  /*
-   * ------------------------------------------------
-   * Update URL
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     UPDATE URL
+  ========================================================= */
 
   const updateURL = ({
     search: newSearch = search,
     category: newCategory = category,
     sort: newSort = sort,
     page = 1,
-  }) => {
+  }: UpdateURLParams = {}) => {
     const params = new URLSearchParams();
 
     if (newSearch.trim()) {
@@ -108,13 +174,13 @@ const ProductsClient = ({
     router.push(query ? `${pathname}?${query}` : pathname);
   };
 
-  /*
-   * ------------------------------------------------
-   * Category
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     CATEGORY CHANGE
+  ========================================================= */
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     const value = e.target.value;
 
     setCategory(value);
@@ -127,13 +193,13 @@ const ProductsClient = ({
     });
   };
 
-  /*
-   * ------------------------------------------------
-   * Sort
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     SORT CHANGE
+  ========================================================= */
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
     const value = e.target.value;
 
     setSort(value);
@@ -146,14 +212,14 @@ const ProductsClient = ({
     });
   };
 
-  /*
-   * ------------------------------------------------
-   * Pagination
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     PAGINATION
+  ========================================================= */
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages) {
+      return;
+    }
 
     updateURL({
       search,
@@ -163,11 +229,9 @@ const ProductsClient = ({
     });
   };
 
-  /*
-   * ------------------------------------------------
-   * Clear filters
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     CLEAR FILTERS
+  ========================================================= */
 
   const clearFilters = () => {
     setSearch("");
@@ -177,13 +241,11 @@ const ProductsClient = ({
     router.push(pathname);
   };
 
-  /*
-   * ------------------------------------------------
-   * Page numbers
-   * ------------------------------------------------
-   */
+  /* =========================================================
+     PAGE NUMBERS
+  ========================================================= */
 
-  const getPageNumbers = () => {
+  const getPageNumbers = (): (number | string)[] => {
     const pages: (number | string)[] = [];
 
     if (totalPages <= 7) {
@@ -215,6 +277,10 @@ const ProductsClient = ({
 
     return pages;
   };
+
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
@@ -282,6 +348,7 @@ const ProductsClient = ({
                   type="button"
                   onClick={() => {
                     setSearch("");
+
                     updateURL({
                       search: "",
                       category,
@@ -311,21 +378,11 @@ const ProductsClient = ({
               >
                 <option value="">All Categories</option>
 
-                {/* 
-                  Category list should come from backend
-                  if you have a category API.
-                */}
-
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                {categories.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
                   </option>
                 ))}
-
-                {/* <option value="Food">Food</option>
-                <option value="Beverage">Beverage</option>
-                <option value="Personal Care">Personal Care</option>
-                <option value="Household">Household</option> */}
               </select>
 
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
@@ -346,13 +403,21 @@ const ProductsClient = ({
                 onChange={handleSortChange}
                 className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-9 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
               >
-                <option value="latest">Latest Updated</option>
+                <option value="latest">
+                  Latest Updated
+                </option>
 
-                <option value="oldest">Oldest Updated</option>
+                <option value="oldest">
+                  Oldest Updated
+                </option>
 
-                <option value="price-low">Price: Low to High</option>
+                <option value="price-low">
+                  Price: Low to High
+                </option>
 
-                <option value="price-high">Price: High to Low</option>
+                <option value="price-high">
+                  Price: High to Low
+                </option>
               </select>
 
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400">
@@ -383,7 +448,9 @@ const ProductsClient = ({
                 {currentPage}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-slate-800">{totalPages}</span>
+              <span className="font-semibold text-slate-800">
+                {totalPages}
+              </span>
             </p>
 
             <p className="text-sm text-slate-500">
@@ -397,7 +464,10 @@ const ProductsClient = ({
         {products.length > 0 ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard
+                key={product._id}
+                product={product}
+              />
             ))}
           </div>
         ) : (
@@ -436,7 +506,9 @@ const ProductsClient = ({
                 {currentPage}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-slate-800">{totalPages}</span>
+              <span className="font-semibold text-slate-800">
+                {totalPages}
+              </span>
             </p>
 
             <div className="flex items-center gap-1.5">
@@ -445,12 +517,16 @@ const ProductsClient = ({
               <button
                 type="button"
                 disabled={!pagination?.hasPreviousPage}
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() =>
+                  handlePageChange(currentPage - 1)
+                }
                 className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft size={17} />
 
-                <span className="hidden sm:inline">Previous</span>
+                <span className="hidden sm:inline">
+                  Previous
+                </span>
               </button>
 
               {/* Pages */}
@@ -472,7 +548,9 @@ const ProductsClient = ({
                     <button
                       key={page}
                       type="button"
-                      onClick={() => handlePageChange(page as number)}
+                      onClick={() =>
+                        handlePageChange(page)
+                      }
                       className={`h-10 min-w-10 rounded-xl px-3 text-sm font-semibold transition ${
                         currentPage === page
                           ? "bg-blue-600 text-white shadow-sm"
@@ -490,10 +568,14 @@ const ProductsClient = ({
               <button
                 type="button"
                 disabled={!pagination?.hasNextPage}
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() =>
+                  handlePageChange(currentPage + 1)
+                }
                 className="flex h-10 items-center gap-1 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <span className="hidden sm:inline">Next</span>
+                <span className="hidden sm:inline">
+                  Next
+                </span>
 
                 <ChevronRight size={17} />
               </button>
@@ -504,181 +586,5 @@ const ProductsClient = ({
     </div>
   );
 };
-
-/* =========================================================
-   PRODUCT CARD
-========================================================= */
-
-// const ProductCard = ({ product }) => {
-//   const stock = Number(product.stock || 0);
-
-//   const stockStatus =
-//     stock === 0
-//       ? {
-//           text: "Out of Stock",
-//           className:
-//             "border-red-100 bg-red-50 text-red-600",
-//         }
-//       : stock <= 10
-//       ? {
-//           text: "Low Stock",
-//           className:
-//             "border-amber-100 bg-amber-50 text-amber-600",
-//         }
-//       : {
-//           text: "In Stock",
-//           className:
-//             "border-emerald-100 bg-emerald-50 text-emerald-600",
-//         };
-
-//   return (
-//     <div className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl">
-
-//       {/* Header */}
-
-//       <div className="border-b border-slate-100 bg-gradient-to-br from-blue-50 via-white to-slate-50 p-5">
-//         <div className="flex items-start justify-between gap-3">
-
-//           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm ring-1 ring-slate-100">
-//             <Package size={26} />
-//           </div>
-
-//           <span
-//             className={`rounded-full border px-3 py-1 text-xs font-semibold ${stockStatus.className}`}
-//           >
-//             {stockStatus.text}
-//           </span>
-//         </div>
-
-//         <div className="mt-5">
-//           <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-600">
-//             {product.category || "Uncategorized"}
-//           </p>
-
-//           <h2 className="line-clamp-2 min-h-[56px] text-lg font-bold leading-7 text-slate-900">
-//             {product.productName}
-//           </h2>
-
-//           <p className="mt-1 text-xs text-slate-400">
-//             Code: {product.productCode || "N/A"}
-//           </p>
-//         </div>
-//       </div>
-
-//       {/* Prices */}
-
-//       <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100">
-//         <Price
-//           label="MRP"
-//           value={product.mrpPrice}
-//         />
-
-//         <Price
-//           label="TP"
-//           value={product.tpPrice}
-//         />
-
-//         <Price
-//           label="DP"
-//           value={product.dpPrice}
-//           highlight
-//         />
-//       </div>
-
-//       {/* Details */}
-
-//       <div className="p-5">
-
-//         <div className="mb-4 flex items-center justify-between">
-//           <div className="flex items-center gap-2">
-//             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
-//               <Boxes size={17} />
-//             </div>
-
-//             <div>
-//               <p className="text-xs text-slate-400">
-//                 Stock
-//               </p>
-
-//               <p className="text-sm font-bold text-slate-800">
-//                 {stock.toLocaleString()}
-//               </p>
-//             </div>
-//           </div>
-
-//           {product.brand && (
-//             <div className="text-right">
-//               <p className="text-xs text-slate-400">
-//                 Brand
-//               </p>
-
-//               <p className="max-w-28 truncate text-sm font-semibold text-slate-700">
-//                 {product.brand}
-//               </p>
-//             </div>
-//           )}
-//         </div>
-
-//         <div className="grid grid-cols-2 gap-2">
-//           <div className="rounded-xl bg-slate-50 p-3">
-//             <p className="text-[11px] text-slate-400">
-//               Weight
-//             </p>
-
-//             <p className="mt-1 text-sm font-semibold text-slate-700">
-//               {product.weight || 0}{" "}
-//               {product.weightUnit || ""}
-//             </p>
-//           </div>
-
-//           <div className="rounded-xl bg-slate-50 p-3">
-//             <p className="text-[11px] text-slate-400">
-//               Carton Size
-//             </p>
-
-//             <p className="mt-1 text-sm font-semibold text-slate-700">
-//               {product.cartonSize || 0}
-//             </p>
-//           </div>
-//         </div>
-
-//         {/* Last update */}
-
-//         {product.lastUpdate && (
-//           <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-//             <div className="flex items-center gap-2">
-//               <RefreshCw
-//                 size={14}
-//                 className="text-slate-400"
-//               />
-
-//               <span className="text-xs text-slate-400">
-//                 Last updated
-//               </span>
-//             </div>
-
-//             <span className="text-xs font-medium text-slate-600">
-//               {new Date(
-//                 product.lastUpdate
-//               ).toLocaleString("en-BD", {
-//                 day: "2-digit",
-//                 month: "short",
-//                 year: "numeric",
-//                 hour: "2-digit",
-//                 minute: "2-digit",
-//                 hour12: true,
-//                 timeZone: "Asia/Dhaka",
-//               })}
-//             </span>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-/* =========================================================
-   PRICE
-========================================================= */
 
 export default ProductsClient;

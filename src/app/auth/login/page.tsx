@@ -38,7 +38,7 @@ const LoginPage = () => {
       const { data, error } = await authClient.signIn.email({
         email,
         password,
-        dontRememberMe: !rememberMe, // Better Auth uses dontRememberMe boolean flag
+        rememberMe: !rememberMe, // Better Auth uses dontRememberMe boolean flag
       });
 
       if (error) {

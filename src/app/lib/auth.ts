@@ -1,7 +1,13 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { admin } from "better-auth/plugins";
+import { admin as adminPlugin } from "better-auth/plugins";
+
+import {
+  ac,
+  admin,
+  employee,
+} from "@/app/lib/auth/permissions";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MONGODB_URI to .env.local");
@@ -47,6 +53,13 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    admin(),
+    adminPlugin({
+      ac,
+
+      roles: {
+        admin,
+        employee,
+      },
+    }),
   ],
 });

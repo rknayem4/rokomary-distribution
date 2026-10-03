@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { auth } from "@/app/lib/auth";
 
 const EXPRESS_API_URL =
-  process.env.NEXT_PUBLIC_PASE_URL|| "http://localhost:8000";
+  process.env.NEXT_PUBLIC_PASE_URL || "http://localhost:8000";
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Unauthorized",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Only admin can create employees",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Name, email, password and phone are required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
         name,
         email,
         password,
-        role: "EMPLOYEE",
+        role: "employee",
 
         data: {
           phone,
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
           success: false,
           message: "Failed to create employee account",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -115,10 +115,10 @@ export async function POST(request: Request) {
           address: address || "",
           joiningDate: joiningDate || "",
 
-          role: "EMPLOYEE",
+          role: "employee",
           status: "active",
         }),
-      }
+      },
     );
 
     const employeeData = await employeeResponse.json();
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
             "Employee account created but profile creation failed",
           userId,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
         userId,
         employeeId: employeeData.employeeId,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("CREATE EMPLOYEE ERROR:", error);
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Failed to create employee",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
